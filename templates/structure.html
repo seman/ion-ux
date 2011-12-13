@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>OOI Integrated Observatory Network</title>
+  <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico"/>
+  <link rel="stylesheet" type="text/css" href="/static/css/ciux-default.css"/>
+  <link rel="stylesheet" type="text/css" media="screen" href="/static/css/jquery-ui-1.8.6.custom.css"/> 
+  <link rel="stylesheet" type="text/css" media="screen" href="/static/css/ciux-datatable-page.css"/>
+  <link rel="stylesheet" type="text/css" media="screen" href="/static/css/ciux-datatable-table-jui.css"/>
+  <link rel="stylesheet" type="text/css" media="screen" href="/static/css/colorbox.css"/>
+  <link rel="stylesheet" type="text/css" media="screen" href="/static/css/ooici_ux-main.css"/>
+
+  <!-- temp css below -->
+  <style>
+    body { margin:40px}
+    a {color:#000}
+    ul li {margin:10px 0px; cursor:pointer;list-style:none;}
+  </style>
+
+</head>
+<body>
+  <h3><a href="/structure">ion ux backbone structure (reload)</a></h3>
+  <div id="container">
+    <p>Data Resources:</p>
+    <div id="data-resources"></div>
+  </div>
+
+
+<!-- TODO: separate out into *.html template files -->
+
+<script type="text/template" id="data-resource-item-tmpl">
+  <ul>
+  <% _.each(dataResourceSummary, function(summary) { %> 
+    <li class='data-summary'>
+      <a href='#data_resource_details/<%= summary.datasetMetadata.data_resource_id %>'><%= summary.datasetMetadata.title %></a>
+    </li>
+  <% }); %>
+  </ul>
+</script>
+
+<script src="/static/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script src="/static/js/json2.js" type="text/javascript"></script>
+<script src="/static/js/underscore-min.js" type="text/javascript"></script>
+<script src="/static/js/backbone-min.js" type="text/javascript"></script>
+<script src="/static/js/ion-ux.js" type="text/javascript"></script>
+<script src="/static/js/ux-models.js" type="text/javascript"></script>
+<script src="/static/js/ux-collections.js" type="text/javascript"></script>
+<script src="/static/js/ux-views.js" type="text/javascript"></script>
+<script src="/static/js/ux-router.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(function() {
+    IONUX.init();
+  });
+</script>
+
+</body>
+</html>
