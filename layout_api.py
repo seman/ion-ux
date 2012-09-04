@@ -25,6 +25,12 @@ DEFINED_VIEWS = ['2050001', # Instrument
 
 class LayoutApi(object):
     @staticmethod
+    def get_new_layout_schema():
+        ui_specs = open('ui_specs.json', 'r')
+        layout_schema = json.load(ui_specs)
+        return layout_json
+        
+    @staticmethod
     def process_layout():
         layout_json = layout_json_tree()
         interaction_json = interaction_layout_tree()

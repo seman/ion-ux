@@ -75,13 +75,18 @@ def resource_facepage(resource_id=None):
 
 @app.route('/layout/', methods=['GET'])
 def layout():
-    layout_schema = LayoutApi.get_layout_schema()
-    return jsonify(data=layout_schema)
+    layout = LayoutApi.get_layout_schema()
+    return jsonify(data=layout)
 
 @app.route('/layout2/', methods=['GET'])
 def layout2():
     layout = LayoutApi.process_layout()
     return layout
+
+@app.route('/layout3/', methods=['GET'])
+def layout3():
+    layout = LayoutApi.get_new_layout_schema()
+    return jsonify(data=layout)
 
 # ---------------------------------------------------------------------------
 # END LAYOUT
