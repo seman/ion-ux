@@ -539,7 +539,10 @@ def resource_types():
 def dev_datatable(resource_id=None):
     return render_template('dev_datatable.html')
 
-
+@app.route('/dev/ionux', methods=['GET'])
+def dev_ionux():
+    tmpl = Template(LayoutApi.build_new_partials())
+    return render_template(tmpl)
 
 
 

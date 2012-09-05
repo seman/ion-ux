@@ -23,13 +23,7 @@ DEFINED_VIEWS = ['2050001', # Instrument
                  '2050012', # Information Resource
                 ]
 
-class LayoutApi(object):
-    @staticmethod
-    def get_new_layout_schema():
-        ui_specs = open('ui_specs.json', 'r')
-        layout_schema = json.load(ui_specs)
-        return layout_json
-        
+class LayoutApi(object):        
     @staticmethod
     def process_layout():
         layout_json = layout_json_tree()
@@ -45,6 +39,100 @@ class LayoutApi(object):
             layout_schema = service_gateway_get('directory', 'get_ui_specs', params={'user_id': 'tboteler'})
         return layout_schema
     
+    @staticmethod
+    def get_new_layout_schema():
+        layout_schema = service_gateway_get('directory', 'get_ui_specs', params={'user_id': 'tboteler'})
+        return layout_schema
+    
+    
+    @staticmethod
+    def build_new_partials(layout_schema=None, interactions=None):
+        env = Environment()
+        env.loader = FileSystemLoader('templates')
+        tmpl_unparsed = env.get_template('new_ion_ux.html').render()
+        tmpl = ET.fromstring(tmpl_unparsed.encode('utf-8'))
+        
+        # Body element for appending scripts/templates
+        body_elmt = tmpl.find('body')
+        
+        layout_schema = LayoutApi.get_new_layout_schema()
+        # CIUX DB Error: Need to fix 'InstrumentDevice' being 
+        # referred to just 'Instrument'...
+        resource_types = ['InstrumentDevice', 'Instrument']
+        
+        view = layout_schema['elements']['2163152'] 
+        script_elmt = ET.SubElement(body_elmt, 'script')
+        script_elmt.set('id', '2163152')
+        script_elmt.set('type', 'text/template')
+        
+        # Creating page structure via Twitter Bootstrap
+        # conventions. This will be optimized.
+
+        # Fluid row to hold page heading
+        row_heading = ET.SubElement(script_elmt, 'div')
+        row_heading.set('class', 'row-fluid heading')
+
+        # Fluid row to hold columns for main page
+        row_container = ET.SubElement(script_elmt, 'div')
+        row_container.set('class', 'row-fluid')
+
+        # Page Heading
+        v00_elmt = ET.SubElement(row_heading, 'div')
+        v00_elmt.set('class', 'span12')
+        # Left column
+        v01_elmt = ET.SubElement(row_container, 'div')
+        v01_elmt.set('class', 'span3')
+        # Right column
+        v02_elmt = ET.SubElement(row_container, 'div')
+        v02_elmt.set('class', 'span9')
+        
+        # Page header
+        group_h1_elmt = ET.SubElement(v00_elmt, 'h1')
+        group_h1_elmt.text = 'Resource type: ' + resource_types[0]
+        
+        # Groups
+        for gr_element in view['embed']:
+            group = layout_schema['elements'][gr_element['elid']]
+            group_position = gr_element['pos']
+            
+            if group_position == 'V00':
+                parent_elmt = v00_elmt
+            elif group_position == 'V01':
+                parent_elmt = v01_elmt
+            else:
+                parent_elmt = v02_elmt
+            
+            group_elmt = ET.SubElement(parent_elmt, 'div')
+            group_h2_elmt = ET.SubElement(group_elmt, 'h2')
+            group_h2_elmt.text = group['label'] + ' (' + group_position + ')'
+            
+            # Blocks
+            for bl_element in group['embed']:
+                block = layout_schema['elements'][bl_element['elid']]
+                block_position = bl_element['pos']
+                
+                for resource_type in resource_types:
+                    if resource_type in block['name']:
+                        block_elmt = ET.SubElement(group_elmt, 'div')
+                        block_h3_elmt = ET.SubElement(block_elmt, 'h3')
+                        block_h3_elmt.text = block['label'] + ' (' + block_position + ')'
+                
+                # Attributes
+                for at_element in block['embed']:
+                    attribute = layout_schema['elements'][at_element['elid']]
+                    attribute_position = at_element['pos']
+                    
+                    for resource_type in resource_types:
+                        if resource_type in attribute['name']:
+                            print 'attribute', attribute
+                            attribute_elmt = ET.SubElement(block_elmt, 'div')
+                            attribute_elmt.text = attribute['label'] + ' (' + attribute_position + ')'
+
+        tmpl = ET.tostring(tmpl)
+        h = HTMLParser.HTMLParser()
+        return h.unescape(tmpl)
+
+
 def interaction_layout_tree():
     interactions = {'block_interactions': ['Save', 'Edit', 'Close']}
     return interactions
@@ -250,3 +338,8 @@ def build_partials(layout_schema=None, interactions=None):
     tmpl = ET.tostring(tmpl)
     h = HTMLParser.HTMLParser()
     return h.unescape(tmpl)
+
+
+
+
+
