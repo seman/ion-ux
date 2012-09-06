@@ -542,6 +542,11 @@ def resource_types():
 @app.route('/dev/datatable', methods=['GET'])
 def dev_datatable(resource_id=None):
     return render_template('dev_datatable.html')
+@app.route('/dev/actionmenus', methods=['GET'])
+def dev_datatable(resource_id=None):
+    return render_template('dev_actionmenus.html')
+
+
 
 @app.route('/dev/ionux', methods=['GET'])
 def dev_ionux():
