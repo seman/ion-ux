@@ -28,7 +28,6 @@ def render_app_template(current_url):
         tmpl = Template(LayoutApi.process_layout())
     return render_template(tmpl, **{"current_url":"/", "roles":roles, "logged_in":logged_in})
 
-
 @app.route('/instruments/<type>/<instrument_device_id>/', methods=['GET'])
 def instrument_facepage_with_extension(type, instrument_device_id):
     if request.is_xhr:
@@ -88,6 +87,11 @@ def layout3():
     layout = LayoutApi.get_new_layout_schema()
     return jsonify(data=layout)
 
+@app.route('/reset_ui/', methods=['GET'])
+def reset_ui():
+    reset_ui = ServiceApi.reset_ui()
+    return jsonify(data=reset_ui)
+    
 # ---------------------------------------------------------------------------
 # END LAYOUT
 

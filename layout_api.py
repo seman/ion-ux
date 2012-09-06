@@ -76,19 +76,18 @@ class LayoutApi(object):
         row_container = ET.SubElement(script_elmt, 'div')
         row_container.set('class', 'row-fluid')
 
-        # Page Heading
+        # Page heading
         v00_elmt = ET.SubElement(row_heading, 'div')
         v00_elmt.set('class', 'span12')
-        # Left column
+        group_h1_elmt = ET.SubElement(v00_elmt, 'h1')
+        group_h1_elmt.text = 'Resource type: ' + resource_types[0]
+
+        # Page content - left and right columns
         v01_elmt = ET.SubElement(row_container, 'div')
         v01_elmt.set('class', 'span3')
-        # Right column
         v02_elmt = ET.SubElement(row_container, 'div')
         v02_elmt.set('class', 'span9')
         
-        # Page header
-        group_h1_elmt = ET.SubElement(v00_elmt, 'h1')
-        group_h1_elmt.text = 'Resource type: ' + resource_types[0]
         
         # Groups
         for gr_element in view['embed']:
@@ -104,7 +103,7 @@ class LayoutApi(object):
             
             group_elmt = ET.SubElement(parent_elmt, 'div')
             group_h2_elmt = ET.SubElement(group_elmt, 'h2')
-            group_h2_elmt.text = group['label'] + ' (' + group_position + ')'
+            group_h2_elmt.text = group['label'] + ' (' + gr_element['elid'] + ': '+ group_position + ')'
             
             # Blocks
             for bl_element in group['embed']:
@@ -115,7 +114,7 @@ class LayoutApi(object):
                     if resource_type in block['name']:
                         block_elmt = ET.SubElement(group_elmt, 'div')
                         block_h3_elmt = ET.SubElement(block_elmt, 'h3')
-                        block_h3_elmt.text = block['label'] + ' (' + block_position + ')'
+                        block_h3_elmt.text = block['label'] + ' (' + bl_element['elid'] + ': '+ block_position + ')'
                 
                 # Attributes
                 for at_element in block['embed']:
@@ -124,9 +123,8 @@ class LayoutApi(object):
                     
                     for resource_type in resource_types:
                         if resource_type in attribute['name']:
-                            print 'attribute', attribute
                             attribute_elmt = ET.SubElement(block_elmt, 'div')
-                            attribute_elmt.text = attribute['label'] + ' (' + attribute_position + ')'
+                            attribute_elmt.text = attribute['label'] + ' (' + at_element['elid'] + ': ' + attribute_position + ')'
 
         tmpl = ET.tostring(tmpl)
         h = HTMLParser.HTMLParser()
