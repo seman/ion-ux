@@ -26,7 +26,9 @@ AGENT_REQUEST_TEMPLATE = {
 class ServiceApi(object):
     @staticmethod
     def reset_ui():
-        return service_gateway_get('directory', 'reset_ui_specs', params={'url': 'https://userexperience.oceanobservatories.org/database-exports'})
+        # return service_gateway_get('directory', 'reset_ui_specs', params={'url': 'res/preload/r2_ioc'})
+        return service_gateway_get('directory', 'reset_ui_specs', params={'url': 'http://filemaker.oceanobservatories.org/database-exports/'})
+        # return service_gateway_get('directory', 'reset_ui_specs', params={'url': 'https://userexperience.oceanobservatories.org/database-exports'})
         
     @staticmethod
     def find_by_resource_type(resource_type):
@@ -832,8 +834,8 @@ def service_gateway_agent_request(agent_id, operation_name, params={}):
             return resp['data']['GatewayResponse'][0]
 
 def pretty_console_log(label, content, data=None):
-    # pass
-    print '\n Service Gateway: ', '%s : %s' % (label, content), '\n\n'
+    pass
+    # print '\n Service Gateway: ', '%s : %s' % (label, content), '\n\n'
     # if data:
     #     print 'data : %s' % data
 
