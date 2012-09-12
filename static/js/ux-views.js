@@ -19,6 +19,25 @@
 //     }
 // });
 
+IONUX.Views.Facepage = Backbone.View.extend({
+    el: '#dynamic-container',
+    initialize: function(){
+        _.bindAll(this, 'render');
+        var rt = this.options.resource_type;
+        this.view_elements = 'li.' + rt + ',div.' + rt;
+        this.li_element = 'li.' + rt + ':first';
+    },
+    render: function(){
+        this.$el.html($('#2163152').html());
+        $('.span9 li,.span3 li').hide();
+        $(this.view_elements).show();
+        $('.span9 ul').find(this.li_element).find('a').click();
+        // $(this.click_elements).click();
+        return this;
+    },
+})
+
+
 // UI Representation Base View
 IONUX.Views.Base = Backbone.View.extend({
     events: {
