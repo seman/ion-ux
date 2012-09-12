@@ -548,7 +548,6 @@ def dev_actionmenus(resource_id=None):
     return render_template('dev_actionmenus.html')
 
 
-
 @app.route('/dev/ionux', methods=['GET'])
 def dev_ionux():
     tmpl = Template(LayoutApi.build_new_partials())

@@ -44,7 +44,8 @@ class LayoutApi(object):
         layout_schema = service_gateway_get('directory', 'get_ui_specs', params={'user_id': 'tboteler'})
         return layout_schema
     
-    
+    # Brute force method to quickly experiment with different rendering strategies
+    # with CSS rules, etc. Optimizations/refactoring will be underway soon.
     @staticmethod
     def build_new_partials(layout_schema=None, interactions=None):
         env = Environment()
@@ -64,7 +65,6 @@ class LayoutApi(object):
         script_elmt = ET.SubElement(body_elmt, 'script')
         script_elmt.set('id', '2163152')
         script_elmt.set('type', 'text/template')
-        
         
         # BEGIN BASIC PAGE STRUCTURE 
         # Creating page structure via Twitter Bootstrap
@@ -138,12 +138,7 @@ class LayoutApi(object):
             group_elmt = ET.SubElement(group_container_elmt, 'div')
             group_elmt.attrib['id'] = group_elid
             group_elmt.attrib['class'] = 'tab-pane'
-            
-            # Set .active if first grouping
-            # if group_is_active:
-            #     group_li_elmt.attrib['class'] = 'active'
-            #     group_elmt.attrib['class'] = 'active'
-            
+                        
         # END GROUPS -------------------------------------------------------------------
             
             # Blocks
@@ -152,27 +147,35 @@ class LayoutApi(object):
                 block_position = bl_element['pos']
                 block_res_type = block['ie']['ie_name']
                 
-                a = group_li_elmt.get('class')
-                if a is None:
-                    a = ''
-                a += ' %s' % block['ie']['ie_name']
-                
-                # Set .active if first grouping
+                # Set li class based on block_res_type
+                li_css_class = group_li_elmt.get('class')
+                group_css_class = group_elmt.get('class')
+                if li_css_class is None: # Catch empty/unset class on first item
+                    li_css_class = ''
+                if not block_res_type in li_css_class:
+                    li_css_class += ' %s' % block['ie']['ie_name']
                 if group_is_active:
-                    group_li_elmt.attrib['class'] = a
-                    group_elmt.attrib['class'] = 'active'
-                else:
-                    group_li_elmt.attrib['class'] = a
-                    print 'what the hell', block['ie']['ie_name']
+                    if not 'active' in li_css_class: 
+                        li_css_class += ' active'
+                    if not 'active' in group_css_class:
+                        group_css_class += ' active'
+                group_li_elmt.attrib['class'] = li_css_class
+                group_elmt.attrib['class'] = group_css_class
                 
-                
+                # Set block div
                 block_elmt = ET.SubElement(group_elmt, 'div')
-                # block_h3_elmt = ET.SubElement(block_elmt, 'h3')
-                # block_h3_elmt.text = block['label'] + ' (' + bl_element['elid'] + ': '+ block_position + ')'
                 
-                # for resource_type in resource_types:
-                #     if resource_type in block['name']:
-                block_elmt = ET.SubElement(group_elmt, 'div')
+                # Set div class based on block_res_type
+                block_css_class = group_elmt.get('class')
+                if block_css_class is None:
+                    block_css_class = ''
+                if not block_res_type in block_css_class:
+                    block_css_class += ' %s' % block['ie']['ie_name']
+                if group_is_active:
+                    block_css_class += ' active'
+                block_elmt.attrib['class'] = block_css_class
+                block_elmt.attrib['style'] = 'display:none;'
+                
                 block_h3_elmt = ET.SubElement(block_elmt, 'h3')
                 block_h3_elmt.text = block['name'] + ' (' + bl_element['elid'] + ': '+ block_position + ')'
 
