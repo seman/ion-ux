@@ -1,24 +1,3 @@
-// IONUX.Views.Page = Backbone.View.extend({
-//     // el: '#dynamic-container',
-//     events: {
-//     },
-//     initialize: function() {
-//         _.bindAll(this, 'render');
-//         // Set template here to ensure it happens after tmpl has rendered.
-//         // This is to work with both hybrid (template_id) and dyn (view_id)
-//         // simultaneously, for the time being.
-//         if (this.options.template_id) {
-//             this.template = _.template($('#' + this.options.template_id).html());
-//         } else {
-//             this.template = _.template($('#' + this.options.view_id).html());
-//         };
-//         this.model.bind('change', this.render);
-//     },
-//     render: function() {
-//         this.$el.html(this.template()).show();
-//     }
-// });
-
 IONUX.Views.Facepage = Backbone.View.extend({
     el: '#dynamic-container',
     initialize: function(){
@@ -28,11 +7,10 @@ IONUX.Views.Facepage = Backbone.View.extend({
         this.li_element = 'li.' + rt + ':first';
     },
     render: function(){
-        this.$el.html($('#2163152').html());
+        this.$el.html($('#2163153').html());
         $('.span9 li,.span3 li').hide();
         $(this.view_elements).show();
         $('.span9 ul').find(this.li_element).find('a').click();
-        // $(this.click_elements).click();
         return this;
     },
 })
@@ -125,7 +103,7 @@ function page_builder(layout, model) {
             if (ui_representation == 'Attribute Group') {
                  new IONUX.Views.AttributeGroup({block: block, data: data, el: el_id });
              } else if (ui_representation == 'Table') {
-                 new IONUX.Views.Table({'block': block, 'data': data, el: el_id});
+                 new IONUX.Views.DataTable({data:TABLE_DATA, el: el_id});
              } else if (ui_representation == 'Chart') {
                  new IONUX.Views.Chart({'block': block, 'data': data, el: el_id});
              } else if (ui_representation == 'Graph') {

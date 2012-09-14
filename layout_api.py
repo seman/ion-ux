@@ -23,6 +23,13 @@ DEFINED_VIEWS = ['2050001', # Instrument
                  '2050012', # Information Resource
                 ]
 
+NEW_DEFINED_VIEWS = [
+    '2163152', # Facepage
+    '2163153', # Status
+    '2163154', # Related
+
+]
+
 class LayoutApi(object):
     @staticmethod
     def process_layout():
@@ -59,138 +66,154 @@ class LayoutApi(object):
         layout_schema = LayoutApi.get_new_layout_schema()
         # CIUX DB Error: Need to fix 'InstrumentDevice' being 
         # referred to just 'Instrument'...
-        resource_types = ['[InstrumentDevice]', '[Instrument]']
+        # resource_types = ['[InstrumentDevice]', '[Instrument]']
         
-        view = layout_schema['spec']['elements']['2163152'] 
-        script_elmt = ET.SubElement(body_elmt, 'script')
-        script_elmt.set('id', '2163152')
-        script_elmt.set('type', 'text/template')
+        for view_id in NEW_DEFINED_VIEWS:
         
-        # BEGIN BASIC PAGE STRUCTURE 
-        # Creating page structure via Twitter Bootstrap
-        # conventions. This will be optimized.
+            view = layout_schema['spec']['elements'][view_id] 
+            script_elmt = ET.SubElement(body_elmt, 'script')
+            script_elmt.set('id', view_id)
+            script_elmt.set('type', 'text/template')
+        
+            # BEGIN BASIC PAGE STRUCTURE 
+            # Creating page structure via Twitter Bootstrap
+            # conventions. This will be optimized.
 
-        # Fluid row to hold page heading
-        row_heading = ET.SubElement(script_elmt, 'div')
-        row_heading.set('class', 'row-fluid heading')
+            # Fluid row to hold page heading
+            row_heading = ET.SubElement(script_elmt, 'div')
+            row_heading.set('class', 'row-fluid heading')
 
-        # Fluid row to hold columns for main page
-        row_container = ET.SubElement(script_elmt, 'div')
-        row_container.set('class', 'row-fluid')
+            # Fluid row to hold columns for main page
+            row_container = ET.SubElement(script_elmt, 'div')
+            row_container.set('class', 'row-fluid')
 
-        # Page heading
-        v00_elmt = ET.SubElement(row_heading, 'div')
-        v00_elmt.set('class', 'span12 v00')
-        group_h1_elmt = ET.SubElement(v00_elmt, 'h1')
-        group_h1_elmt.text = 'Resource type: ' + resource_types[0]
-
-        # Page content - left and right columns
-        v01_elmt = ET.SubElement(row_container, 'div')
-        v01_elmt.set('class', 'span3')
-        v02_elmt = ET.SubElement(row_container, 'div')
-        v02_elmt.set('class', 'span9')
+            # Page heading
+            v00_elmt = ET.SubElement(row_heading, 'div')
+            v00_elmt.set('class', 'span12 v00')
+            group_h1_elmt = ET.SubElement(v00_elmt, 'h1')
+            group_h1_elmt.text = view['label']
         
-        # END BASIC PAGE STRUCTURE
+            # Page content - left and right columns
+            v01_elmt = ET.SubElement(row_container, 'div')
+            v01_elmt.set('class', 'span3')
+            v02_elmt = ET.SubElement(row_container, 'div')
+            v02_elmt.set('class', 'span9')
         
-        # GROUPS -------------------------------------------------------------------
+            # END BASIC PAGE STRUCTURE
         
-        groups = {}
-        for gr_idx, gr_element in enumerate(view['embed']):
-            group_elid = gr_element['elid']
-            group_position = gr_element['pos']
-            group = layout_schema['spec']['elements'][group_elid]
+            # GROUPS -------------------------------------------------------------------
+        
+            groups = {}
+            for gr_idx, gr_element in enumerate(view['embed']):
+                group_elid = gr_element['elid']
+                group_position = gr_element['pos']
+                group = layout_schema['spec']['elements'][group_elid]
             
-            # Find the page element for the group
-            if group_position == 'V00':
-                parent_elmt = v00_elmt
-            elif group_position == 'V01':
-                parent_elmt = v01_elmt
-            else:
-                parent_elmt = v02_elmt
+                # Find the page element for the group
+                if group_position == 'V00':
+                    parent_elmt = v00_elmt
+                elif group_position == 'V01':
+                    parent_elmt = v01_elmt
+                else:
+                    parent_elmt = v02_elmt
             
-            # Active boolean for CSS
-            group_is_active = False
-            if not group_position in groups.keys():
-                group_is_active = True
+                # Active boolean for CSS
+                group_is_active = False
+                if not group_position in groups.keys():
+                    group_is_active = True
                 
-                # Create ul for navigation
-                group_ul_elmt = ET.SubElement(parent_elmt, 'ul')
-                group_ul_elmt.attrib['class'] = 'nav nav-tabs'
+                    # Create ul for navigation
+                    group_ul_elmt = ET.SubElement(parent_elmt, 'ul')
+                    group_ul_elmt.attrib['class'] = 'nav nav-tabs'
                 
-                # Create group container
-                group_container_elmt = ET.SubElement(parent_elmt, 'div')
-                group_container_elmt.attrib['class'] = 'tab-content'
+                    # Create group container
+                    group_container_elmt = ET.SubElement(parent_elmt, 'div')
+                    group_container_elmt.attrib['class'] = 'tab-content'
 
-                # Track positioning elements in dict
-                groups.update({group_position: {'ul_elmt': group_ul_elmt, 'container_elmt': group_container_elmt}})
-            else:
-                group_ul_elmt = groups[group_position]['ul_elmt']
-                group_container_elmt = groups[group_position]['container_elmt']
+                    # Track positioning elements in dict
+                    groups.update({group_position: {'ul_elmt': group_ul_elmt, 'container_elmt': group_container_elmt}})
+                else:
+                    group_ul_elmt = groups[group_position]['ul_elmt']
+                    group_container_elmt = groups[group_position]['container_elmt']
             
-            # Create li and a elements
-            group_li_elmt = ET.SubElement(group_ul_elmt, 'li')
-            group_a_elmt = ET.SubElement(group_li_elmt, 'a')
-            group_a_elmt.attrib['href'] = '#' + group_elid
-            group_a_elmt.attrib['data-toggle'] = 'tab'
-            group_a_elmt.text = group['label'] + ' (' + group_position + ')'
+                # Create li and a elements
+                group_li_elmt = ET.SubElement(group_ul_elmt, 'li')
+                group_a_elmt = ET.SubElement(group_li_elmt, 'a')
+                group_a_elmt.attrib['href'] = '#' + group_elid
+                group_a_elmt.attrib['data-toggle'] = 'tab'
+                group_a_elmt.text = group['label'] + ' (' + group_position + ')'
             
-            # Create group div inside of tab-content
-            group_elmt = ET.SubElement(group_container_elmt, 'div')
-            group_elmt.attrib['id'] = group_elid
-            group_elmt.attrib['class'] = 'tab-pane'
+                # Create group div inside of tab-content
+                group_elmt = ET.SubElement(group_container_elmt, 'div')
+                group_elmt.attrib['id'] = group_elid
+                group_elmt.attrib['class'] = 'tab-pane'
                         
-        # END GROUPS -------------------------------------------------------------------
+            # END GROUPS -------------------------------------------------------------------
             
-            # Blocks
-            for bl_element in group['embed']:
-                block = layout_schema['spec']['elements'][bl_element['elid']]
-                block_position = bl_element['pos']
-                block_res_type = block['ie']['ie_name']
+                # Blocks
+                for bl_element in group['embed']:
+                    block_elid = bl_element['elid']
+                    block = layout_schema['spec']['elements'][block_elid]
+                    block_position = bl_element['pos']
+                    block_res_type = block['ie']['ie_name']
                 
-                # Set li class based on block_res_type
-                li_css_class = group_li_elmt.get('class')
-                group_css_class = group_elmt.get('class')
-                if li_css_class is None: # Catch empty/unset class on first item
-                    li_css_class = ''
-                if not block_res_type in li_css_class:
-                    li_css_class += ' %s' % block['ie']['ie_name']
-                if group_is_active:
-                    if not 'active' in li_css_class: 
-                        li_css_class += ' active'
-                    if not 'active' in group_css_class:
-                        group_css_class += ' active'
-                group_li_elmt.attrib['class'] = li_css_class
-                group_elmt.attrib['class'] = group_css_class
+                    # Set li class based on block_res_type
+                    li_css_class = group_li_elmt.get('class')
+                    group_css_class = group_elmt.get('class')
+                    if li_css_class is None: # Catch empty/unset class on first item
+                        li_css_class = ''
+                    if not block_res_type in li_css_class:
+                        li_css_class += ' %s' % block['ie']['ie_name']
+                    if group_is_active:
+                        if not 'active' in li_css_class: 
+                            li_css_class += ' active'
+                        if not 'active' in group_css_class:
+                            group_css_class += ' active'
+                    group_li_elmt.attrib['class'] = li_css_class
+                    group_elmt.attrib['class'] = group_css_class
                 
-                # Set block div
-                block_elmt = ET.SubElement(group_elmt, 'div')
+                    # Set block div
+                    block_elmt = ET.SubElement(group_elmt, 'div')
                 
-                # Set div class based on block_res_type
-                block_css_class = group_elmt.get('class')
-                if block_css_class is None:
-                    block_css_class = ''
-                if not block_res_type in block_css_class:
-                    block_css_class += ' %s' % block['ie']['ie_name']
-                if group_is_active:
-                    block_css_class += ' active'
-                block_elmt.attrib['class'] = block_css_class
-                block_elmt.attrib['style'] = 'display:none;'
+                    # Set div class based on block_res_type
+                    block_css_class = group_elmt.get('class')
+                    if block_css_class is None:
+                        block_css_class = ''
+                    if not block_res_type in block_css_class:
+                        block_css_class += ' %s' % block['ie']['ie_name']
+                    if group_is_active:
+                        block_css_class += ' active'
+                    block_elmt.attrib['class'] = block_css_class
+                    block_elmt.attrib['style'] = 'display:none;'
+                    block_elmt.attrib['id'] = block_elid
                 
-                block_h3_elmt = ET.SubElement(block_elmt, 'h3')
-                block_h3_elmt.text = block['name'] + ' (' + bl_element['elid'] + ': '+ block_position + ')'
+                    block_h3_elmt = ET.SubElement(block_elmt, 'h3')
+                    block_h3_elmt.text = block['label'] #block['name'] + ' (' + bl_element['elid'] + ': '+ block_position + ')'
 
-                # Attributes
-                for at_element in block['embed']:
-                    attribute = layout_schema['spec']['elements'][at_element['elid']]
-                    attribute_position = at_element['pos']
-                    attribute_elmt = ET.SubElement(block_elmt, 'div')
-                    attribute_elmt.text = attribute['label'] + ' (' + at_element['elid'] + ': ' + attribute_position + ')'
+                    # Attributes
+                    for at_element in block['embed']:
+                        attribute = layout_schema['spec']['elements'][at_element['elid']]
+                        attribute_position = at_element['pos']
+                        attribute_elmt = ET.SubElement(block_elmt, 'div')
+                        attribute_elmt.text =  attribute['label'] #+ ' (' + at_element['elid'] + ': ' + attribute_position + ')'
     
-                    if len(attribute['embed']) > 0:
-                        for att in attribute['embed']:
-                            attr = layout_schema['spec']['elements'][att['elid']]
-                            attr_elmt = ET.SubElement(attribute_elmt, 'div')
-                            attr_elmt.text = attr['name']
+                        if len(attribute['embed']) > 0:
+                            for att in attribute['embed']:
+                                attr = layout_schema['spec']['elements'][att['elid']]
+                                attr_elmt = ET.SubElement(attribute_elmt, 'div')
+                                attr_elmt.text = attr['label'] #attr['name']
+
+
+        layout_elmt = ET.SubElement(body_elmt, 'script')
+        layout_elmt.set('id', 'layout')
+        layout_elmt.text = "var LAYOUT = %s;" % json.dumps(layout_schema)
+
+
+        init_script_elmt = ET.Element('script')
+        init_script_elmt.set('type', 'text/javascript')
+        init_script_elmt.text = "$(function(){dyn_do_init();});"
+        body_elmt.append(init_script_elmt)
+
 
         tmpl = ET.tostring(tmpl)
         h = HTMLParser.HTMLParser()

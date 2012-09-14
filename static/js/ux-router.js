@@ -3,6 +3,7 @@ IONUX.Router = Backbone.Router.extend({
         "": "dashboard",
         "instruments/:instrument_id/command/": "instrument_command_facepage",
         ":resource_type/:view_type/:resource_id/": "facepage",
+        ":view_type/:resource_type" : 'page_render',
         'interactions/': 'interactions',
 
         // LCA routes
@@ -29,6 +30,22 @@ IONUX.Router = Backbone.Router.extend({
     
     dashboard: function() {
         this._reset();
+    },
+    
+    page_render: function(view_type, resource_type){
+        // TEMP: Will be put in the pre-processor
+        var layouts = {
+            'facepage': '2163152',
+            'status': '2163153',
+            'related': '2163154'
+        };
+        
+        var view_tmpl_id = layouts[view_type];
+        $('#dynamic-container').html($('#' + view_tmpl_id).html());
+        $('.span9 li,.span3 li').hide();
+        $('li.' + resource_type + ',div.' + resource_type).show();
+        $('.span9 ul').find('li.' + resource_type + ':first').find('a').click();
+        
     },
     
     facepage: function(resource_type, view_type, resource_id) {

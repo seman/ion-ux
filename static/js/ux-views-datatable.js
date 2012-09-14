@@ -59,7 +59,7 @@ function status_indicator(obj){
 }
 
 
-IONUX.Views.DataTable = IONUX.Views.Base.extend({
+IONUX.Views.DataTable = Backbone.View.extend({
 
     events: {
         "click .filter-add":"add_filter_item",
