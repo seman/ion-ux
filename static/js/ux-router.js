@@ -329,11 +329,6 @@ function render_page(resource_type, resource_id, model) {
     _.each($('table thead'), function(thead){
         $(thead).find('th').first().click();
     });
-    
-    // _.each($('table thead:hidden'), function(thead){
-    //     $(thead).find('th').first().show().click().hide();
-    // });
-    // 
 };
 
 function render_error(){
