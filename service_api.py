@@ -92,6 +92,7 @@ class ServiceApi(object):
     @staticmethod
     def search(search_query):
         query = None
+        max_search_results = config.MAX_SEARCH_RESULTS if hasattr(config, 'MAX_SEARCH_RESULTS') else 100
 
         # simple search for possible raw query language
         raw_starts = ["search '", "belongs to", "has '", "in '"]
@@ -138,7 +139,7 @@ class ServiceApi(object):
 
             query = " OR ".join(queries)
 
-        url = build_get_request(SERVICE_GATEWAY_BASE_URL, 'discovery', 'parse', params={'search_request':query, 'id_only':False})
+        url = build_get_request(SERVICE_GATEWAY_BASE_URL, 'discovery', 'parse', params={'search_request':query,'limit': max_search_results, 'id_only':False})
         resp = requests.get(url)
         search_json = json.loads(resp.content)
         if search_json['data'].has_key('GatewayResponse'):
@@ -210,7 +211,7 @@ class ServiceApi(object):
         post_data['and'] = queries[1:]
 
         # have to manually call because normal SG post turns a list into the first object?
-        url, data = build_post_request('discovery', 'query', {'query': post_data, 'id_only': False})
+        url, data = build_post_request('discovery', 'query', {'query': post_data, 'limit': 100, 'id_only': False})
         resp = requests.post(url, data)
         search_json = json.loads(resp.content)
         if search_json['data'].has_key('GatewayResponse'):
