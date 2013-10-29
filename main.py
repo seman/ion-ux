@@ -26,6 +26,8 @@ from mimetypes import guess_extension
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
 app.debug = True
+app.logger.setLevel(LOGGING_LEVEL)
+
 
 def get_versions():
     if not hasattr(g, "ion_ux_version"):
@@ -808,10 +810,5 @@ def dev_image(resource_id=None):
 
     
 if __name__ == '__main__':
-    log_path = app.root_path + "/" + LOGGING_FILE_NAME
-    handler = RotatingFileHandler(log_path, maxBytes=LOGGING_MAX_SIZE_MB * 1048576, backupCount=1)
-    handler.setFormatter(Formatter('%(asctime)s %(levelname)s: %(message)s ' '[in %(pathname)s:%(lineno)d]\n----------------------------------------------\n'))
-    app.logger.setLevel(LOGGING_LEVEL)
-    app.logger.addHandler(handler)
     app.logger.info("Starting flask on %s GMT" % datetime.utcnow())
     app.run(debug=True, host=FLASK_HOST, port=FLASK_PORT)
